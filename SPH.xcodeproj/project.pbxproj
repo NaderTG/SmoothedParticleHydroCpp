@@ -25,6 +25,11 @@
 /* Begin PBXFileReference section */
 		618376771D046DCE003E50B9 /* SPH */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SPH; sourceTree = BUILT_PRODUCTS_DIR; };
 		6183767A1D046DCE003E50B9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		618376811D046DE6003E50B9 /* Particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Particle.h; sourceTree = "<group>"; };
+		618376821D046E32003E50B9 /* Vec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vec.h; sourceTree = "<group>"; };
+		618376851D05D758003E50B9 /* Box.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Box.h; sourceTree = "<group>"; };
+		618376861D05E39D003E50B9 /* Cell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cell.h; sourceTree = "<group>"; };
+		618376871D05E5EE003E50B9 /* SPH_system.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPH_system.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +63,11 @@
 			isa = PBXGroup;
 			children = (
 				6183767A1D046DCE003E50B9 /* main.cpp */,
+				618376811D046DE6003E50B9 /* Particle.h */,
+				618376821D046E32003E50B9 /* Vec.h */,
+				618376851D05D758003E50B9 /* Box.h */,
+				618376861D05E39D003E50B9 /* Cell.h */,
+				618376871D05E5EE003E50B9 /* SPH_system.h */,
 			);
 			path = SPH;
 			sourceTree = "<group>";
