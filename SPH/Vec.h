@@ -24,6 +24,8 @@ private:
 public:
     Vec();
     Vec(double a);          //Initialize the vector with value 'a'
+    Vec(double, double);
+    Vec(double, double, double);
     Vec( const Vec&V);
     ~Vec(){};
     int length();
@@ -73,6 +75,23 @@ Vec<N>::Vec(double a){
     for(int i = 0; i < N; i++){
         _elems[i]  = a;
     }
+}
+
+template<int N>
+Vec<N>::Vec(double a, double b){
+    _transpose = -1;
+    
+        _elems[0]  = a;
+    _elems[1]  = b;
+}
+
+template<int N>
+Vec<N>::Vec(double a, double b, double c){
+    _transpose = -1;
+    
+    _elems[0]  = a;
+    _elems[1]  = b;
+    _elems[2] = c;
 }
 
 template<int N>

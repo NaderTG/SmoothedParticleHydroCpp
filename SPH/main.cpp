@@ -7,26 +7,64 @@
 //
 
 #include <iostream>
-
+#include "Particle.h"
 #include "Vec.h"
-
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
-    
-    Vec<2> a(1.0);
-    a[0] = 3;
-    a[1] = 2;
+#include <vector>
+void testVec(){
+    Vec<2> a(3, 2);
+ 
     
     Vec<2> b(3.8);
     //Vec<2> c(1);
     Vec<2> c ;
     c = b+a;
     std::cout << "Hello, World!\n";
-   std::cout << "A = " << c[0] << std::endl;
+    std::cout << "A = " << c[0] << std::endl;
     
     c = a;
     std::cout << "A = " << c[0] << std::endl;
-   // a.print();
+    // a.print();
+    
+    
+}
+
+void testParticle(){
+    Vec<2> a(1.0, 3.1);
+    Vec<2> b(0.1, 0.5);
+    Particle test(a, b, 2.0, 1.0);
+    std::vector<Particle*> container;
+    
+    container.push_back(new Particle(a, b, 2.0, 1.0));
+    std::cout << "Particle's density = " << test.density << std::endl;
+    std::cout << "Particle's mass = " << test.mass << std::endl;
+    std::cout << "Particle's position = [" << test.position[0] << ", " << test.position[1] << "]\n";
+    std::cout << "Particle's velocity = [" << test.velocity[0] << ", " << test.velocity[1] << "]\n";
+    
+    a[0] = 4.0;
+    test.position = a;
+    std::cout << "Particle's position = [" << test.position[0] << ", " << test.position[1] << "]\n";
+    std::cout << std::endl;
+    std::cout << "Particle's density = " << container.at(0)->density<< std::endl;
+    std::cout << "Particle's mass = " << container.at(0)->mass << std::endl;
+    std::cout << "Particle's position = [" << container.at(0)->position[0] << ", " << container.at(0)->position[1] << "]\n";
+    std::cout << "Particle's velocity = [" << container.at(0)->velocity[0] << ", " << container.at(0)->velocity[1] << "]\n";
+    container.at(0)->position = a;
+        std::cout << "\nParticle's position = [" << container.at(0)->position[0] << ", " << container.at(0)->position[1] << "]\n";
+    
+    for(int i = 0; i < 4; i++){
+        container.at(0)->neighbours_ID.push_back(i);
+    }
+    
+    std::cout << "Number of neighbours = " <<container.at(0)->neighbor_size() << std::endl;
+    
+}
+
+
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    std::cout << "Hello, World!\n";
+    
+    //testVec();
+    testParticle();
     return 0;
 }

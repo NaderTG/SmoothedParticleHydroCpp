@@ -52,12 +52,13 @@ Particle::Particle(Vec<2> _pos, Vec<2> _vel, double _mass, double _density){
     
 }
 
-Particle::setPosition(double x, double y){
-    Vec<2> _pos(x, y);
+void Particle::setPosition(double x, double y){
+    Vec<2> _pos;
+    _pos[0] = x; _pos[1] = y;
     position = _pos;
 }
 
-Particle::neighbor_size(){
+int Particle::neighbor_size(){
     return neighbours_ID.size();
 }
 
