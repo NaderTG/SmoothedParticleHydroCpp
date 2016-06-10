@@ -20,8 +20,8 @@ int main(int argc, const char * argv[]) {
     
     Vec<2> b(3.8);
     //Vec<2> c(1);
-    Vec<2> c = b + a;
-    
+    Vec<2> c ;
+    c = b+a;
     std::cout << "Hello, World!\n";
    std::cout << "A = " << c[0] << std::endl;
     
