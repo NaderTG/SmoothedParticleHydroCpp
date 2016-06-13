@@ -32,7 +32,9 @@ public:
     Particle(Vec<2>, Vec<2>, double, double);
     ~Particle(){};
     int neighbor_size();
-    void setPosition(double x, double y);
+    void setPosition(double, double);
+    void assignCell(int);
+    void assignID(int);
     
 };
 
@@ -50,13 +52,22 @@ Particle::Particle(Vec<2> _pos, Vec<2> _vel, double _mass, double _density){
     
 }
 
-Particle::setPosition(double x, double y){
-    Vec<2> _pos(x, y);
+void Particle::setPosition(double x, double y){
+    Vec<2> _pos;
+    _pos[0] = x; _pos[1] = y;
     position = _pos;
 }
 
-Particle::neighbor_size(){
+int Particle::neighbor_size(){
     return neighbours_ID.size();
+}
+
+void Particle::assignCell(int _cell_id){
+    cell_ID = _cell_id;
+}
+
+void Particle::assignID(int _part_ID){
+    particle_ID = _part_ID;
 }
 
 #endif

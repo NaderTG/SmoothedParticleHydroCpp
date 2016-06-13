@@ -24,12 +24,15 @@ private:
 public:
     Vec();
     Vec(double a);          //Initialize the vector with value 'a'
+    Vec(double, double);
+    Vec(double, double, double);
     Vec( const Vec&V);
     ~Vec(){};
     int length();
     double* elem_return();
     
-    Vec& operator=( Vec&);
+//    Vec& operator=( Vec&);
+    Vec& operator=( Vec);
     Vec& operator=( double&);
     void transpose(){_transpose *=-1;}
     int return_trans(){return _transpose;}
@@ -59,11 +62,36 @@ public:
 };
 
 template<int N>
+Vec<N>::Vec( ){
+    _transpose = -1;
+    for(int i = 0; i < N; i++){
+        _elems[i]  = 0.0;
+    }
+}
+
+template<int N>
 Vec<N>::Vec(double a){
     _transpose = -1;
     for(int i = 0; i < N; i++){
         _elems[i]  = a;
     }
+}
+
+template<int N>
+Vec<N>::Vec(double a, double b){
+    _transpose = -1;
+    
+        _elems[0]  = a;
+    _elems[1]  = b;
+}
+
+template<int N>
+Vec<N>::Vec(double a, double b, double c){
+    _transpose = -1;
+    
+    _elems[0]  = a;
+    _elems[1]  = b;
+    _elems[2] = c;
 }
 
 template<int N>
@@ -76,8 +104,17 @@ Vec<N>::Vec(const Vec<N> &V){
 
 
 
+//template<int N>
+//Vec<N>& Vec<N>::operator =( Vec<N>& V){
+//    if( this != &V)
+//        for(int i = 0; i < N; i++){
+//            _elems[i] = V._elems[i];
+//        }
+//    return *this;
+//}
+
 template<int N>
-Vec<N>& Vec<N>::operator =( Vec<N>& V){
+Vec<N>& Vec<N>::operator =( Vec<N> V){
     if( this != &V)
         for(int i = 0; i < N; i++){
             _elems[i] = V._elems[i];
