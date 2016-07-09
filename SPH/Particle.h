@@ -25,7 +25,7 @@ public:
     double mass, density;
     int cell_ID;
     int particle_ID;
-    
+    int part_cell_order;
     std::vector<int> neighbours_ID;
     
     Particle(void);

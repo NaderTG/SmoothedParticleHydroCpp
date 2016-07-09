@@ -34,7 +34,7 @@ public:
     
     vector<Particle> parts_in_cell;
     vector<int> neighbour_index;
-    
+    vector<int> parts_idx;
     int getNumParts();
     int getNumNeighbours();
     
