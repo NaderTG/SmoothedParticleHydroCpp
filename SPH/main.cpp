@@ -66,5 +66,34 @@ int main(int argc, const char * argv[]) {
     
     //testVec();
     testParticle();
+    
+    //How the code should be
+    /*
+     Params prob_params;
+     loadParams();
+     
+     Field domain  =new Field(prob_params);
+     Kernel ker_function;
+     //Main time integration
+     int count = 0;
+     double time = 0.0;
+     
+     while (time < prob_params.ENDTIME){
+     
+        domain.calcForces();
+        domain.updateVelocity();
+        domain.updatePositions();
+        
+        if( (time*prob_params.PROBLEM % time) == 0){
+            domain.updateField();
+        }
+     
+        if((count %prob_params.ITERPLOT) == 0){
+            //vtk stuff
+        }
+     
+     }
+     
+     */
     return 0;
 }
