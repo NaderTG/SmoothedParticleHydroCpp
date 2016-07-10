@@ -30,6 +30,7 @@ public:
     
     Particle(void);
     Particle(Vec<2>, Vec<2>, double, double);
+    Particle(double, double, int);
     ~Particle(){};
     int neighbor_size();
     void setPosition(double, double);
@@ -50,6 +51,12 @@ Particle::Particle(Vec<2> _pos, Vec<2> _vel, double _mass, double _density){
     position = _pos; velocity = _vel;
     
     
+}
+
+Particle::Particle(double _x, double _y, int _part_ID){
+    mass = 1.0; density = 1.0;
+    position[0] = _x; position[1] = _y;
+    particle_ID = _part_ID;
 }
 
 void Particle::setPosition(double x, double y){
