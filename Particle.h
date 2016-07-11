@@ -60,13 +60,13 @@ Particle::Particle(double _x, double _y, int _part_ID){
 }
 
 void Particle::setPosition(double x, double y){
-    Vec<2> _pos;
-    _pos[0] = x; _pos[1] = y;
+    Vec<2> _pos(x, y);
+    
     position = _pos;
 }
 
 int Particle::neighbor_size(){
-    return neighbours_ID.size();
+    return (int)neighbours_ID.size();
 }
 
 void Particle::assignCell(int _cell_id){
