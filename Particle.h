@@ -22,7 +22,7 @@ public:
     Vec<2> velocity;
     Vec<2> prev_position;
     
-    double mass, density;
+    double mass, density, pressure;
     int cell_ID;
     int particle_ID;
     int part_cell_order;
@@ -42,12 +42,12 @@ public:
 
 Particle::Particle(){
     
-    mass = 0.001; density = 1.0;
+    mass = 0.001; density = 1.0; pressure = 1.0;
     
 }
 
 Particle::Particle(Vec<2> _pos, Vec<2> _vel, double _mass, double _density){
-    mass = _mass; density = _density;
+    mass = _mass; density = _density; pressure = 1.0;
     position = _pos; velocity = _vel;
     
     

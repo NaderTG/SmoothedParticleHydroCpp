@@ -36,6 +36,7 @@ public:
     
     void calcForce();
     void calcVelocity();
+    void calcDensity();
     
 };
 
@@ -113,6 +114,7 @@ infile.close();
 
 }
 
+
 void Field::initField(){
     
     double x, y;
@@ -158,6 +160,52 @@ void Field::initField(){
         cells_domain[idx_temp]->parts_idx.push_back(i);
         
     }
+    
+}
+
+void Field::calcDensity(){
+    Vec<2> = _pos;
+    Vec<2> = _pos_neighbour;
+    int _idx_neighbour;
+    for (int i = 0; i <  num_particles; i++){
+        _pos = particle_list.at(i)->position;
+        //particle_list.at(i)->density = particle_list.at(i)->mass*W(_pos, _pos);
+        
+        for(int j = 0; j < particle_list.at(i)->neighbour_size(); j++){
+            _idx_neighbour = particle_list.at(i)->neighbours_ID.at(j);
+            _pos_neighbour = particle_list.at(_idx_neighbour)->position;
+            
+           // particle_list.at(i)->density += particle_list.at(i)->mass*W(_pos, _pos_neighbour);
+            
+        }
+        
+    }
+    
+}
+
+void Field::calcForce(){
+    
+    calcDensity();
+    
+    Vec<2> = _pos;
+    Vec<2> = _pos_neighbour;
+    int _idx_neighbour;
+    
+    for (int i = 0; i <  num_particles; i++){
+        _pos = particle_list.at(i)->position;
+        //particle_list.at(i)->density = particle_list.at(i)->mass*W(_pos, _pos);
+        
+        for(int j = 0; j < particle_list.at(i)->neighbour_size(); j++){
+            _idx_neighbour = particle_list.at(i)->neighbours_ID.at(j);
+            _pos_neighbour = particle_list.at(_idx_neighbour)->position;
+            
+            // particle_list.at(i)->density += particle_list.at(i)->mass*W(_pos, _pos_neighbour);
+            
+        }
+        
+    }
+    
+    
     
 }
 
