@@ -77,39 +77,52 @@ void Field::loadParticles(){
     
     //Read PGM file (needs rewriting!!)
     
+    
     int xsize, ysize;
     double dx, dy;
-    ifstream infile(init_filename);
-    stringstream ss;
-    string inputLine = "";
+    double** _pos_list;
+    std::ifstream infile("test.pgm");
+    std::stringstream ss;
+    std::string inputLine = "";
     // First line : version
     getline(infile,inputLine);
-    if(inputLine.compare("P2") != 0) cerr << "Version error" << endl;
-    else cout << "Version : " << inputLine << endl;
+    if(inputLine.compare("P2") != 0) std::cout << "Version error" << std::endl;
+    else std::cout << "Version : " << inputLine << std::endl;
     int _read_temp;
     // Second line : comment
     getline(infile,inputLine);
-    cout << "Comment : " << inputLine << endl;
+    std::cout << "Comment : " << inputLine << std::endl;
     
     // Continue with a stringstream
     ss << infile.rdbuf();
     // Third line : size
+    int numcols, numrows;
     ss >> numcols >> numrows;
-    cout << numcols << " columns and " << numrows << " rows" << endl;
+    std::cout << numcols << " columns and " << numrows << " rows" << std::endl;
+    
+    //init  _pos_list
+    _pos_list = (double**) calloc(numrows, sizeof(double*));
+    
+    for(int i = 0; i < numrows; i++){
+        _pos_list[i] = (double *) calloc(numcols, sizeof(double));
+    }
+    
     int counter = 0;
+    ss >> _read_temp;
     // Following lines : data
-    for(row = 0; row < numrows; ++row)
-        for (col = 0; col < numcols; ++col) {
+
+    for(int row = 0; row < numrows; ++row){
+        for (int col = 0; col < numcols; ++col) {
             ss >> _read_temp;
             if(_read_temp == 1){
                 particle_list.push_back(new Particle(dx*col, dy*row, counter));
                 counter++;
             }
         }
-}
+    }
 
-//Might put debug
-infile.close();
+    //Might put debug
+    infile.close();
 
 
 }
