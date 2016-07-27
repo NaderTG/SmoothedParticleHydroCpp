@@ -146,7 +146,7 @@ void Field::initField(){
             
             for(int k1= 0; k1 < 3; k1++){
                 for(int k2= 0; k2 < 3; k2++){
-                    x_idx = (i + k1)% num_cells_hor;
+                    x_idx = (i + k1) % num_cells_hor;
                     y_idx = (j + k2) % num_cells_ver;
                     
                     idx_temp = num_cells_hor*x_idx + y_idx;
@@ -164,8 +164,8 @@ void Field::initField(){
     for(int i = 0; i < num_particles; i++){
         _position = particle_list[i]->position;
         
-        x_idx = (int) floor(_position[0]/ width );
-        y_idx = (int) floor(_position[1]/ height);
+        x_idx = (int) floor(_position[0]/ dx );
+        y_idx = (int) floor(_position[1]/ dy );
         idx_temp = num_cells_hor*x_idx + y_idx;
         particle_list[i]->cell_ID = idx_temp;
         
@@ -262,8 +262,8 @@ void Field::Update_field(){
         cells_domain.at(_cell_idx)->parts_idx.erase(particle_list.at(i)->part_cell_order);
         
         _pos2 =particle_list.at(i)->position;
-        _x_temp = (int) floor(_pos2[0] / width);
-        _y_temp = (int) floor(_pos2[1] / height);
+        _x_temp = (int) floor(_pos2[0] / dx);
+        _y_temp = (int) floor(_pos2[1] / dy);
         _cell_idx = _x_temp*num_cells_hor + _y_temp;
         
         cells_domain.at(_cell_idx)->parts_idx.push_back(i);
