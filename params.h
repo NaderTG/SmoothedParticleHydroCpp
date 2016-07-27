@@ -76,96 +76,97 @@ namespace params_config {
 }
 
 class Params{
-
+    
     double init_mass;
     double init_density;
-
+    
     int num_cells_hor;
     int num_cells_ver;
-    double width, height, dx, dy;
+    int num_cells;
+    double width, height, dx, dy; //dx is the cell width and dy is the cell height
     double t_end, dt;
     int numTimeSteps;
     std::string image_name;
     std::string filename;
     Params(std::string _filename);
- 
-
-  
+    
+    
+    
 };
 
 Params::Params(std::string _filename){
-
-
+    
+    
     params_config::data myconfig;
     filename = _filename;
     std::ifstream f(filename + ".ini");
-
+    
     image_name = filename + ".pgm";
     f >> myconfig;
     f.close();
-
+    
     //Mass
-        for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
-            if("mass" == iter->first){
-                init_mass  = std::stod (iter->second);
-            }
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("mass" == iter->first){
+            init_mass  = std::stod (iter->second);
         }
+    }
     //Density
-        for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
-            if("density" == iter->first){
-                init_density  = std::stod (iter->second);
-            }
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("density" == iter->first){
+            init_density  = std::stod (iter->second);
         }
-
+    }
+    
     //Dt
-        for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
-            if("dt" == iter->first){
-                dt  = std::stod (iter->second);
-            }
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("dt" == iter->first){
+            dt  = std::stod (iter->second);
         }
-
+    }
+    
     //End time
-        for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
-            if("time" == iter->first){
-                t_end  = std::stod (iter->second);
-            }
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("time" == iter->first){
+            t_end  = std::stod (iter->second);
         }
-
+    }
+    
     //Horizontal cells
-        for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
-            if("horizontal cells" == iter->first){
-                num_cells_hor = std::stoi (iter->second);
-            }
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("horizontal cells" == iter->first){
+            num_cells_hor = std::stoi (iter->second);
         }
-
+    }
+    
     //Verticle cells
-        for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
-            if("verticle cells" == iter->first){
-                num_cells_ver = std::stoi (iter->second);
-            }
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("verticle cells" == iter->first){
+            num_cells_ver = std::stoi (iter->second);
         }
-
+    }
+    
     //Height
-        for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
-            if("height" == iter->first){
-                height  = std::stod (iter->second);
-            }
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("height" == iter->first){
+            height  = std::stod (iter->second);
         }
-
+    }
+    
     //Width
-        for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
-            if("width" == iter->first){
-                width  = std::stod (iter->second);
-            }
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("width" == iter->first){
+            width  = std::stod (iter->second);
         }
-
-
-            numTimeSteps = (int) floor(time / dt );
-
+    }
+    
+    
+    numTimeSteps = (int) floor(time / dt );
+    num_cells = num_cells_hor * num_cells_ver;
     dx = width / (double) num_cells_hor;
     dy = height / (double) num_cells_ver;
 }
- 
+
 
 #endif // PARAMS
 

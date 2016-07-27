@@ -17,7 +17,7 @@
 class Cell{
 public:
     int cell_ID;
- 
+    
     int num_particles;
     double cell_width;
     double cell_height;
@@ -29,7 +29,7 @@ public:
     ~Cell(){};
     
     void setCellID(int );
-  
+    
     void setCellType(int);
     
     void setPosition(Vec<2>);
@@ -39,7 +39,7 @@ public:
     vector<int> parts_idx;
     int getNumParts();
     int getNumNeighbours();
-   // bool inCell(Particle*);
+    // bool inCell(Particle*);
     
 };
 
@@ -50,7 +50,7 @@ Cell::Cell(){
     position[0] = 0.0; position[1] = 0.0;
     
     cell_ID = 1;
- 
+    
     num_particles = 1;
     cell_type = 0;
     
@@ -59,7 +59,7 @@ Cell::Cell(){
 Cell::Cell(Vec<2> _pos, int _cell_id, int _type){
     position = _pos;
     cell_ID = _cell_id;
- 
+    
     cell_type = _type;
 }
 

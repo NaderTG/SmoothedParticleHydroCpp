@@ -21,10 +21,11 @@ public:
     int num_particles;
     int num_cells_1D;
     double width, height; //Total width of the field
-    double w_h, h_h; //cell width
-    int num_cells_w, num_cells_h; //number of cells of each diractions
+    double dx, dy; //cell width
+    int num_cells_hor, num_cells_ver; //number of cells of each diractions
     double _search_radius;
     std::string init_filename;
+    std::string image_name;
     Field();
     Field(Params);
     
@@ -41,17 +42,18 @@ public:
 };
 
 Field::Field(){
-    Params _params();
+    Params _params("test");
     num_cells = _params.num_cells;
-    num_cells_w = (int) (sqrt(num_cells));
-    num_cells_h = (int) (sqrt(num_cells));
+    num_cells_hor = _params.num_cells_hor;
+    num_cells_ver = _params.num_cells_ver;
     
-    num_particles = _params.num_particles;
     
-    init_filename = "default.pgm";
+    
+    image_name = "test.pgm";
     width = _params.width;
-    w_h = _params.dx;
-    h_h = _params.dx;
+    height = _params.height;
+    dx = _params.dx;
+    dy = _params.dx;
     loadParticles();
     intiField();
     
@@ -59,13 +61,17 @@ Field::Field(){
 Field::Field(Params _params){
     
     num_cells = _params.num_cells;
-    num_particles = _params.num_particles;
+    num_cells_hor = _params.num_cells_hor;
+    num_cells_ver = _params.num_cells_ver;
+    
+    
     width = _params.width;
-    w_h = _params.dx;
-    h_h = _params.dx;
+    height = _params.height;
+    dx = _params.dx;
+    dy = _params.dy;
     
     init_filename = _params.filename;
-    
+    image_name = _params.image_name;
     loadParticles();
     initField();
     
@@ -79,9 +85,9 @@ void Field::loadParticles(){
     
     
     int xsize, ysize;
-    double dx, dy;
+    
     double** _pos_list;
-    std::ifstream infile("test.pgm");
+    std::ifstream infile(image_name);
     std::stringstream ss;
     std::string inputLine = "";
     // First line : version
@@ -100,17 +106,10 @@ void Field::loadParticles(){
     ss >> numcols >> numrows;
     std::cout << numcols << " columns and " << numrows << " rows" << std::endl;
     
-    //init  _pos_list
-    _pos_list = (double**) calloc(numrows, sizeof(double*));
-    
-    for(int i = 0; i < numrows; i++){
-        _pos_list[i] = (double *) calloc(numcols, sizeof(double));
-    }
-    
     int counter = 0;
     ss >> _read_temp;
     // Following lines : data
-
+    
     for(int row = 0; row < numrows; ++row){
         for (int col = 0; col < numcols; ++col) {
             ss >> _read_temp;
@@ -120,11 +119,11 @@ void Field::loadParticles(){
             }
         }
     }
-
+    
     //Might put debug
     infile.close();
-
-
+    
+    
 }
 
 
@@ -133,26 +132,27 @@ void Field::initField(){
     double x, y;
     Vec<2> _position(0.0);
     int x_idx, y_idx, idx_temp, idx;
-    double w_half = width/ 2.0;
-    double h_half = height / 2.0;
+    double dx_half = dx/ 2.0;
+    double dy_half = dy / 2.0;
     
-    for(int i = 0; i < num_cells_h ; i++){ //Horizontal
-        for(int j = 0; j < num_cells_w ; j++){ //Vertical
-            idx = num_cells_w*i + j;
+    for(int i = 0; i < num_cells_ver ; i++){ //Horizontal
+        for(int j = 0; j < num_cells_hor ; j++){ //Vertical
+            idx = num_cells_hor*i + j;
             
-            _position[0] = i*width + w_half;
-            _position[1] = j*height + h_half;
+            _position[0] = i*dx+ dx_half;
+            _position[1] = j*dy + dy_half;
             
             cells_domain.push_back(new Cell(_position, idx, 0, 0));
             
             for(int k1= 0; k1 < 3; k1++){
                 for(int k2= 0; k2 < 3; k2++){
-                    x_idx = (i + k1)% num_cells_h;
-                    y_idx = (j + k2) % num_cells_w;
+                    x_idx = (i + k1)% num_cells_hor;
+                    y_idx = (j + k2) % num_cells_ver;
                     
-                    idx_temp = num_cells_w*x_idx + y_idx;
+                    idx_temp = num_cells_hor*x_idx + y_idx;
                     cells_domain[idx]->neighbour_index.push_back(idx_temp);
-                    
+                    cells_domain[idx]->cell_width = dx;
+                    cells_domain[idx]->cell_height = dy;
                 }
             }
             cells_domain[idx]->neighbour_index.erase(cells_domain[idx]->neighbour_index.begin());
@@ -165,8 +165,8 @@ void Field::initField(){
         _position = particle_list[i]->position;
         
         x_idx = (int) floor(_position[0]/ width );
-        y_idx = (int) floor(_position[1]/ width );
-        idx_temp = num_cells_w*x_idx + y_idx;
+        y_idx = (int) floor(_position[1]/ height);
+        idx_temp = num_cells_hor*x_idx + y_idx;
         particle_list[i]->cell_ID = idx_temp;
         
         particle_list[i]->part_cell_order = cells_domain[idx_temp]->parts_idx.size();
@@ -188,7 +188,7 @@ void Field::calcDensity(){
             _idx_neighbour = particle_list.at(i)->neighbours_ID.at(j);
             _pos_neighbour = particle_list.at(_idx_neighbour)->position;
             
-           // particle_list.at(i)->density += particle_list.at(i)->mass*W(_pos, _pos_neighbour);
+            // particle_list.at(i)->density += particle_list.at(i)->mass*W(_pos, _pos_neighbour);
             
         }
         
@@ -264,7 +264,7 @@ void Field::Update_field(){
         _pos2 =particle_list.at(i)->position;
         _x_temp = (int) floor(_pos2[0] / width);
         _y_temp = (int) floor(_pos2[1] / height);
-        _cell_idx = _x_temp*num_cells_w + _y_temp;
+        _cell_idx = _x_temp*num_cells_hor + _y_temp;
         
         cells_domain.at(_cell_idx)->parts_idx.push_back(i);
         //Add the cell number to the particle
