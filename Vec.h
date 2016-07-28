@@ -10,6 +10,7 @@
 #define SPH_Vec_h
 
 
+
 #include<cmath>
 #include<string>
 #include<iostream>
@@ -31,7 +32,7 @@ public:
     int length();
     double* elem_return();
     
-//    Vec& operator=( Vec&);
+    //    Vec& operator=( Vec&);
     Vec& operator=( Vec);
     Vec& operator=( double&);
     void transpose(){_transpose *=-1;}
@@ -46,18 +47,26 @@ public:
     double l2norm(){
         double sum = 0.0;
         for(int i =0 ; i < N; i++){
-            sum += _elems[i];
+            sum += _elems[i]*_elems[i];
         }
         return sqrt(sum);
     }
     double squaredNorm(){
         double sum = 0.0;
         for(int i =0 ; i < N; i++){
-            sum += _elems[i];
+            sum += _elems[i]*_elems[i];
         }
         return sum;
     }
-    friend std::ostream& operator<<(std::ostream& output, Vec& A);
+    friend std::ostream& operator<<(std::ostream& output, Vec& A){
+        output << "\n[\n";
+        for(int i = 0; i < N; i++){
+            output << A[i] <<", "<< std::endl;
+        }
+        output << "]\n" << std::endl;
+        return output;
+    }
+    
     
 };
 
@@ -81,7 +90,7 @@ template<int N>
 Vec<N>::Vec(double a, double b){
     _transpose = -1;
     
-        _elems[0]  = a;
+    _elems[0]  = a;
     _elems[1]  = b;
 }
 
@@ -221,14 +230,5 @@ double operator*(Vec<N>&u, Vec<N>&v){
     return sum;
 }
 
-template<int N>
-std::ostream& operator << (std::ostream& output, Vec<N>& A){
-    output << "[ ";
-    for(int i = 0; i < N; i++){
-        output << A[i] << std::endl;
-    }
-    output << "]" << std::endl;
-    return output;
-}
 
 #endif

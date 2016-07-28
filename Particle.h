@@ -20,6 +20,7 @@ public:
     
     Vec<2> position;
     Vec<2> velocity;
+    Vec<2> force;
     Vec<2> prev_position;
     
     double mass, density, pressure;
@@ -49,13 +50,14 @@ Particle::Particle(){
 Particle::Particle(Vec<2> _pos, Vec<2> _vel, double _mass, double _density){
     mass = _mass; density = _density; pressure = 1.0;
     position = _pos; velocity = _vel;
-    
+    force[0] = 0.0; force[1] = 0.0;
     
 }
 
 Particle::Particle(double _x, double _y, int _part_ID){
     mass = 1.0; density = 1.0;
     position[0] = _x; position[1] = _y;
+    force[0] = 0.0; force[1] = 0.0;
     particle_ID = _part_ID;
 }
 

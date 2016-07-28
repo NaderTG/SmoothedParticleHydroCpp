@@ -84,6 +84,8 @@ class Params{
     int num_cells_ver;
     int num_cells;
     double width, height, dx, dy; //dx is the cell width and dy is the cell height
+    double search_radius;
+    double kernel_radius;
     double t_end, dt;
     int numTimeSteps;
     std::string image_name;
@@ -160,6 +162,19 @@ Params::Params(std::string _filename){
         }
     }
     
+    //Search radius
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("search radius" == iter->first){
+            search_radius  = std::stod (iter->second);
+        }
+    }
+    
+    //Kernel radius
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("kernel width" == iter->first){
+            kernel_radius  = std::stod (iter->second);
+        }
+    }
     
     numTimeSteps = (int) floor(time / dt );
     num_cells = num_cells_hor * num_cells_ver;

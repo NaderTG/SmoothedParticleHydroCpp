@@ -22,6 +22,7 @@ public:
     int num_cells_1D;
     double width, height; //Total width of the field
     double dx, dy; //cell width
+    double init_denisty, init_mass;
     int num_cells_hor, num_cells_ver; //number of cells of each diractions
     double _search_radius;
     std::string init_filename;
@@ -46,9 +47,10 @@ Field::Field(){
     num_cells = _params.num_cells;
     num_cells_hor = _params.num_cells_hor;
     num_cells_ver = _params.num_cells_ver;
+    _search_radius = 0.1;
     
-    
-    
+    init_mass = 1.0;
+    init_denisty = 1.0;
     image_name = "test.pgm";
     width = _params.width;
     height = _params.height;
@@ -64,11 +66,14 @@ Field::Field(Params _params){
     num_cells_hor = _params.num_cells_hor;
     num_cells_ver = _params.num_cells_ver;
     
-    
+    _search_radius = _params.search_radius;
     width = _params.width;
     height = _params.height;
     dx = _params.dx;
     dy = _params.dy;
+    
+    init_denisty = _params.init_denisty;
+    init_mass = _params.init_mass;
     
     init_filename = _params.filename;
     image_name = _params.image_name;
@@ -115,6 +120,8 @@ void Field::loadParticles(){
             ss >> _read_temp;
             if(_read_temp == 1){
                 particle_list.push_back(new Particle(dx*col, dy*row, counter));
+                particle_list.back()->mass = init_mass;
+                particle_list.back()->density = init_denisty;
                 counter++;
             }
         }
@@ -182,13 +189,13 @@ void Field::calcDensity(){
     int _idx_neighbour;
     for (int i = 0; i <  num_particles; i++){
         _pos = particle_list.at(i)->position;
-        //particle_list.at(i)->density = particle_list.at(i)->mass*W(_pos, _pos);
+        //particle_list.at(i)->density = particle_list.at(i)->mass ;
         
         for(int j = 0; j < particle_list.at(i)->neighbour_size(); j++){
             _idx_neighbour = particle_list.at(i)->neighbours_ID.at(j);
             _pos_neighbour = particle_list.at(_idx_neighbour)->position;
             
-            // particle_list.at(i)->density += particle_list.at(i)->mass*W(_pos, _pos_neighbour);
+            // particle_list.at(i)->density += (particle_list.at(i)->mass)*W(_pos, _pos_neighbour);
             
         }
         
@@ -202,11 +209,12 @@ void Field::calcForce(){
     
     Vec<2> = _pos;
     Vec<2> = _pos_neighbour;
+    double _rho_i, _rho_j;
     int _idx_neighbour;
     
     for (int i = 0; i <  num_particles; i++){
         _pos = particle_list.at(i)->position;
-        //particle_list.at(i)->density = particle_list.at(i)->mass*W(_pos, _pos);
+       _rho_i = particle_list.at(i)->density ;
         
         for(int j = 0; j < particle_list.at(i)->neighbour_size(); j++){
             _idx_neighbour = particle_list.at(i)->neighbours_ID.at(j);

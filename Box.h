@@ -41,9 +41,7 @@ bool Box::in_box(double t, Particle *particle_list){
     Vec<2> _pos = particle_list->position;
     Vec<2> _vel = particle_list->velocity;
     double mass = particle_list->mass;
-    
-    
-    
+  
     
 }
 

@@ -12,7 +12,7 @@
 #include <vector>
 void testVec(){
     Vec<2> a(3, 2);
- 
+  
     
     Vec<2> b(3.8);
     //Vec<2> c(1);
@@ -63,8 +63,7 @@ void testParticle(){
 int main(int argc, const char * argv[]) {
     // insert code here...
     std::cout << "Hello, World!\n";
-    
-    //testVec();
+    testVec();
     testParticle();
     
     //How the code should be
