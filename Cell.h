@@ -35,11 +35,13 @@ public:
     void setPosition(Vec<2>);
     
     
-    vector<int> neighbour_index;
-    vector<int> parts_idx;
+    std::vector<int> neighbour_index;
+    std::vector<int> parts_idx;
     int getNumParts();
+    void setCell_type(int _type);
+    void eraseFromList(int _idx);
     int getNumNeighbours();
-    // bool inCell(Particle*);
+    bool inCell(Particle*);
     
 };
 
@@ -64,16 +66,21 @@ Cell::Cell(Vec<2> _pos, int _cell_id, int _type){
 }
 
 void Cell::setCellID(int _id){ cell_ID = _id;}
-void Cell::cell_type(int _type) {cell_type = _type;}
+void Cell::setCell_type(int _type) {cell_type = _type;}
 void Cell::setPosition(Vec<2> _pos) { position = _pos;}
 
 
 int Cell::getNumParts(){
-    return parts_idx.size();
+    return (int) parts_idx.size();
 }
 
+void Cell::eraseFromList(int _idx){
+    if((int) parts_idx.size() > 0){
+        parts_idx.erase(parts_idx.begin() + _idx);
+    }
+}
 int Cell::getNumNeighbours(){
-    return neighbour_index.size();
+    return (int) neighbour_index.size();
     
 }
 

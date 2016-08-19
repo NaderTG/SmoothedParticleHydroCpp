@@ -35,6 +35,7 @@ public:
     ~Particle(){};
     int neighbor_size();
     void setPosition(double, double);
+    void resetForce();
     void assignCell(int);
     void assignID(int);
     
@@ -79,4 +80,7 @@ void Particle::assignID(int _part_ID){
     particle_ID = _part_ID;
 }
 
+void Particle::resetForce(){
+    force[0] = 0.0; force[1] = 0.0;
+}
 #endif

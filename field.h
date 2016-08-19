@@ -11,6 +11,17 @@
 #include <fstream> // ifstream
 #include <sstream> // stringstream
 
+
+bool dist(Vec<2>& _pos_a, Vec<2>& _pos_b , double radius){
+    bool result = false;
+    Vec<2> _r = _pos_a - _pos_b;
+    double _r_norm = _r.l2norm();
+    
+    result = (_r_norm < radius);
+    
+    return result;
+}
+
 class Field{
 public:
     //Implementation of periodic domain
@@ -25,6 +36,7 @@ public:
     double init_denisty, init_mass;
     int num_cells_hor, num_cells_ver; //number of cells of each diractions
     double _search_radius;
+    double pressure_denisty;
     std::string init_filename;
     std::string image_name;
     Field();
@@ -32,12 +44,25 @@ public:
     
     ~Field(){};
     
+    friend std::ostream& operator<<(std::ostream& output, Field& _A){
+        
+        for(int i = 0; i < _N.num_part; i++){
+            output << _A.particle_list.at(i)->position[0] << "\t" << _A.particle_list.at(i)->position[1] << "\t" << _A.particle_list.at(i).density << "\n";
+        
+        }
+        
+    }
+    
+    
     void initField();
     void Update_field();
     void loadParticles();
     
+    void neighbourListing();
+    
     void calcForce();
     void calcVelocity();
+    void calcPressure();
     void calcDensity();
     
 };
@@ -47,7 +72,7 @@ Field::Field(){
     num_cells = _params.num_cells;
     num_cells_hor = _params.num_cells_hor;
     num_cells_ver = _params.num_cells_ver;
-    _search_radius = 0.1;
+    _search_radius = 0.3;
     
     init_mass = 1.0;
     init_denisty = 1.0;
@@ -149,20 +174,27 @@ void Field::initField(){
             _position[0] = i*dx+ dx_half;
             _position[1] = j*dy + dy_half;
             
-            cells_domain.push_back(new Cell(_position, idx, 0, 0));
+            cells_domain.push_back(new Cell(_position, idx,  0));
             
-            for(int k1= 0; k1 < 3; k1++){
-                for(int k2= 0; k2 < 3; k2++){
-                    x_idx = (i + k1) % num_cells_hor;
-                    y_idx = (j + k2) % num_cells_ver;
+            cells_domain[idx]->cell_width = dx;
+            cells_domain[idx]->cell_height = dy;
+            
+            //Populating neighbour list
+            
+            for(int k1= -1; k1 < 2; k1++){
+                for(int k2= -1; k2 < 2; k2++){
+                    
+                    if((k1 == 0) && (k2 == 0)){continue;}
+                    
+                    x_idx = (((i + k1) % num_cells_hor ) +  num_cells_hor) %  num_cells_hor;
+                    y_idx = (((j + k2) % num_cells_ver) + num_cells_ver ) % num_cells_ver;
                     
                     idx_temp = num_cells_hor*x_idx + y_idx;
                     cells_domain[idx]->neighbour_index.push_back(idx_temp);
-                    cells_domain[idx]->cell_width = dx;
-                    cells_domain[idx]->cell_height = dy;
+
                 }
             }
-            cells_domain[idx]->neighbour_index.erase(cells_domain[idx]->neighbour_index.begin());
+           
             
         }
     }
@@ -176,10 +208,62 @@ void Field::initField(){
         idx_temp = num_cells_hor*x_idx + y_idx;
         particle_list[i]->cell_ID = idx_temp;
         
-        particle_list[i]->part_cell_order = cells_domain[idx_temp]->parts_idx.size();
+        particle_list[i]->part_cell_order = (int) cells_domain[idx_temp]->parts_idx.size();
         cells_domain[idx_temp]->parts_idx.push_back(i);
         
     }
+    //Create neighbour list
+    neighbourListing();
+
+    
+}
+
+
+void Field::neighbourListing(){
+    Vec<2> _pos_curr(0.0); int _x_temp, _y_temp;
+    Vec<2> _pos_other(0.0);
+    int _idx_part,  _cell_idx , _cell_idx_neighbour;
+    
+    
+    for(int i = 0; i < num_part; i++){
+        
+        _cell_idx = particle_list.at(i)->cell_ID;
+        _pos_curr = particle_list.at(i)->position;
+        
+        //Clear neighbour list
+        particle_list.at(i)->neighbours_ID.clear();
+        
+        //Loop on the particle's home cell
+        for(int j = 0; j < cells_domain.at(_cell_idx)->getNumParts() - 1; j++){
+            //define dist function!!!!
+            _idx_part = cells_domain.at(_cell_idx)->parts_idx.at(j);
+            if(_idx_part == i){continue;}
+            _pos_other =particle_list.at(_idx_part)->position;
+            if(dist(_pos_curr, _pos_other , _search_radius)){
+                particle_list.at(i)->neighbours_ID.push_back(_idx_part);
+            }
+            
+        }
+        
+        //Loop on the neighbouring cells to find all particles in the radius;
+        for(int k = 0; k < cells_domain.at(_cell_idx)->getNumNeighbours(); k++){
+            _cell_idx_neighbour = cells_domain.at(_cell_idx)->neighbour_index[k];
+            
+            
+            for(int j = 0; j < cells_domain.at(_cell_idx_neighbour)->getNumParts(); j++){
+                _idx_part = cells_domain.at(_cell_idx_neighbour)->parts_idx.at(j);
+                _pos_other =particle_list.at(_idx_part)->position;
+                if(dist(_pos2, _pos_other , _search_radius)){
+                    particle_list.at(i)->neighbours_ID.push_back(_idx_part);
+                }
+                //
+            }
+            
+        }
+        
+        
+    }
+    
     
 }
 
@@ -189,38 +273,55 @@ void Field::calcDensity(){
     int _idx_neighbour;
     for (int i = 0; i <  num_particles; i++){
         _pos = particle_list.at(i)->position;
-        //particle_list.at(i)->density = particle_list.at(i)->mass ;
+        particle_list.at(i)->density = particle_list.at(i)->mass ;
         
         for(int j = 0; j < particle_list.at(i)->neighbour_size(); j++){
             _idx_neighbour = particle_list.at(i)->neighbours_ID.at(j);
             _pos_neighbour = particle_list.at(_idx_neighbour)->position;
             
-            // particle_list.at(i)->density += (particle_list.at(i)->mass)*W(_pos, _pos_neighbour);
-            
+            particle_list.at(i)->density += (particle_list.at(i)->mass)*W(_pos, _pos_neighbour);
+            //I need to add the fact that both particles are symmetric.
         }
         
     }
     
 }
 
+void Field::calcPressure(){
+    double _density =0.0;
+    for (int i = 0; i <  num_particles; i++){
+        _density = particle_list.at(i)->density;
+        particle_list.at(i)->pressure = pressure_denisty*(_density)*(_density);
+    }
+}
+
 void Field::calcForce(){
     
     calcDensity();
     
-    Vec<2> = _pos;
-    Vec<2> = _pos_neighbour;
+    Vec<2>  _pos(0.0);
+    Vec<2>  _pos_neighbour(0.0);
+    vec<2>  _force(0.0);
     double _rho_i, _rho_j;
+    double _pressure_i, _pressure_j;
     int _idx_neighbour;
     
     for (int i = 0; i <  num_particles; i++){
         _pos = particle_list.at(i)->position;
        _rho_i = particle_list.at(i)->density ;
+        _pressure_i =particle_list.at(i)->pressure;
         
+        particle_list.at(i)
         for(int j = 0; j < particle_list.at(i)->neighbour_size(); j++){
             _idx_neighbour = particle_list.at(i)->neighbours_ID.at(j);
             _pos_neighbour = particle_list.at(_idx_neighbour)->position;
+            _pressure_j = particle_list.at(_idx_neighbour)->pressure;
+            _rho_j =particle_list.at(_idx_neighbour)->density;
             
-            // particle_list.at(i)->density += particle_list.at(i)->mass*W(_pos, _pos_neighbour);
+            
+            _force = -particle_list.at(i)->mass * (_pressure_i/ (_rho_i*_rho_i) + _pressure_j/ (_rho_j*_rho_j))*W_fun.gradient(_pos, _pos_neighbour);
+            particle_list.at(i)->acceleration = _force;
+            
             
         }
         
@@ -236,35 +337,10 @@ void Field::Update_field(){
     Vec<2> _pos_other(0.0);
     int _idx_part,  _cell_idx , _cell_idx_neighbour;
     
+    //Not optimal, need to think of a better way to avoid the 2*Nlog(N)
+    neighbourListing();
+    
     for(int i = 0; i < num_particles; i++){
-        _cell_idx = particle_list.at(i)->cell_ID;
-        _pos2 = particle_list.at(i)->position;
-        //Clear neighbour list
-        particle_list.at(i)->neighbours_ID.clear();
-        for(int j = 0; j < cells_domain.at(_cell_idx)->getNumParts(); j++){
-            //define dist function!!!!
-            _idx_part = cells_domain.at(_cell_idx)->parts_idx.at(j);
-            _pos_other =particle_list.at(_idx_part)->position;
-            if(dist(_pos2, _pos_other , _search_radius)){
-                particle_list.at(i)->neighbours_ID.push_back(_idx_part);
-            }
-            
-        }
-        //Loop on the neighbouring cells to find all particles in the radius;
-        for(int k = 0; k < cells_domain.at(_cell_idx)->getNumNeighbours(); k++){
-            _cell_idx_neighbour = cells_domain.at(_cell_idx)->neighbour_index[k];
-            
-            for(int j = 0; j < cells_domain.at(_cell_idx_neighbour)->getNumParts(); j++){
-                //define dist function!!!!
-                _idx_part = cells_domain.at(_cell_idx_neighbour)->parts_idx.at(j);
-                _pos_other =particle_list.at(_cell_idx_neighbour)->position;
-                if(dist(_pos2, _pos_other , _search_radius)){
-                    particle_list.at(i)->neighbours_ID.push_back(_idx_part);
-                }
-                
-            }
-            
-        }
         
         //erase the particle from the particle list in the cell
         cells_domain.at(_cell_idx)->parts_idx.erase(particle_list.at(i)->part_cell_order);
