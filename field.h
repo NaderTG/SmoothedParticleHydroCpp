@@ -7,6 +7,7 @@
 #include "Cell.h"
 #include "Vec.h"
 #include "params.h"
+#include "Kernel.h"
 #include <vector>
 #include <fstream> // ifstream
 #include <sstream> // stringstream
@@ -37,20 +38,25 @@ public:
     int num_cells_hor, num_cells_ver; //number of cells of each diractions
     double _search_radius;
     double pressure_denisty;
+    
+    double nu;
+    double lambda;
+    
     std::string init_filename;
     std::string image_name;
+    
+    ker_poly6 W_fun;
+    
     Field();
     Field(Params);
     
     ~Field(){};
     
-    friend std::ostream& operator<<(std::ostream& output, Field& _A){
-        
-        for(int i = 0; i < _N.num_part; i++){
+    friend std::ostream& operator<<(std::ostream& output, Field& _A){ 
+        for(int i = 0; i < _A.num_particles; i++){
             output << _A.particle_list.at(i)->position[0] << "\t" << _A.particle_list.at(i)->position[1] << "\t" << _A.particle_list.at(i).density << "\n";
-        
+            
         }
-        
     }
     
     
@@ -72,7 +78,8 @@ Field::Field(){
     num_cells = _params.num_cells;
     num_cells_hor = _params.num_cells_hor;
     num_cells_ver = _params.num_cells_ver;
-    _search_radius = 0.3;
+    _search_radius = 0.2;
+    W_fun = *new ker_poly6();
     
     init_mass = 1.0;
     init_denisty = 1.0;
@@ -100,6 +107,8 @@ Field::Field(Params _params){
     init_denisty = _params.init_denisty;
     init_mass = _params.init_mass;
     
+    nu =  1;
+    lambda = 0.1; //Need calculating
     init_filename = _params.filename;
     image_name = _params.image_name;
     loadParticles();
@@ -152,6 +161,8 @@ void Field::loadParticles(){
         }
     }
     
+    num_particles = (int) particle_list.size();
+    
     //Might put debug
     infile.close();
     
@@ -164,7 +175,7 @@ void Field::initField(){
     double x, y;
     Vec<2> _position(0.0);
     int x_idx, y_idx, idx_temp, idx;
-    double dx_half = dx/ 2.0;
+    double dx_half = dx / 2.0;
     double dy_half = dy / 2.0;
     
     for(int i = 0; i < num_cells_ver ; i++){ //Horizontal
@@ -191,10 +202,10 @@ void Field::initField(){
                     
                     idx_temp = num_cells_hor*x_idx + y_idx;
                     cells_domain[idx]->neighbour_index.push_back(idx_temp);
-
+                    
                 }
             }
-           
+            
             
         }
     }
@@ -214,7 +225,7 @@ void Field::initField(){
     }
     //Create neighbour list
     neighbourListing();
-
+    
     
 }
 
@@ -279,7 +290,7 @@ void Field::calcDensity(){
             _idx_neighbour = particle_list.at(i)->neighbours_ID.at(j);
             _pos_neighbour = particle_list.at(_idx_neighbour)->position;
             
-            particle_list.at(i)->density += (particle_list.at(i)->mass)*W(_pos, _pos_neighbour);
+            particle_list.at(i)->density += (particle_list.at(i)->mass)*W_fun(_pos, _pos_neighbour);
             //I need to add the fact that both particles are symmetric.
         }
         
@@ -291,7 +302,7 @@ void Field::calcPressure(){
     double _density =0.0;
     for (int i = 0; i <  num_particles; i++){
         _density = particle_list.at(i)->density;
-        particle_list.at(i)->pressure = pressure_denisty*(_density)*(_density);
+        particle_list.at(i)->pressure = 0.1*pressure_denisty*(_density)*(_density);
     }
 }
 
@@ -308,7 +319,7 @@ void Field::calcForce(){
     
     for (int i = 0; i <  num_particles; i++){
         _pos = particle_list.at(i)->position;
-       _rho_i = particle_list.at(i)->density ;
+        _rho_i = particle_list.at(i)->density ;
         _pressure_i =particle_list.at(i)->pressure;
         
         particle_list.at(i)

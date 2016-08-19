@@ -64,6 +64,44 @@ void testParticle(){
     
 }
 
+void testParticle2(){
+    
+    //Initialialise particles
+    std::vector<Particle*> container;
+ 
+    Vec<2> _position(0.0);
+    int num_part = 8;
+    
+    double radius = 0.25; double _x, _y;
+ 
+    double theta = (2.0*PI)/ (double)  num_part ;
+ 
+    
+    std::cout << "theta = " << theta << std::endl;
+    
+    for(int i = 0; i <  num_part ; i++){
+        _x = radius*(sin(i*theta)) + 0.5;
+        _y = radius*(cos(i*theta)) + 0.5;
+        //    std::cout << "x = [" << _x << " , " << _y << "]\n";
+        container.push_back(new Particle(_x, _y, i));
+        container.back()->mass = 1.0 + 0.1*i;
+        container.back()->density = 1.0;
+        
+    }
+    
+    Vec<2> a(1.0, 3.1);
+    Vec<2> b(0.1, 0.5);
+    
+    container[0]->position = a;
+    container[2]->position = b;
+    
+    
+    for(int i = 0; i < num_part; i++){
+        std::cout << "Particle[" << i << "] = (" << container[i]->position[0] << ", " << container[i]->position[1] << ")\n";
+    }
+    
+}
+
 bool dist(Vec<2>& _pos_a, Vec<2>& _pos_b , double radius){
     bool result = false;
     Vec<2> _r = _pos_a - _pos_b;
@@ -301,17 +339,25 @@ void testPartUpdate(); //To be done Actually, this is done previously
 
 void testForce(); //To be done
 
+void testScatterPlot(){
+    
+    
+    
+    
+    
+}
 
 int main(int argc, const char * argv[]) {
     // insert code here...
     std::cout << "Hello, World!\n";
-  //  testVec();
-   // testParticle();
+   //  testVec();            //Done!
+   //  testParticle();       //Done!
+   //  testPartAllocation(); //Done!
     
     
+    testParticle2();
     
-  //  std::cout << "result = " <<(( (6) % 5 ) + 5) % 5 << std::endl;
-    testPartAllocation();
+    
     //How the code should be
     /*
      Params prob_params;
