@@ -6,8 +6,8 @@
 //  Copyright (c) 2016 Nader. All rights reserved.
 //
 
-#ifndef SPH_Box_h
-#define SPH_Box_h
+#ifndef SPH3_Box_h
+#define SPH3_Box_h
 
 #include "Vec.h"
 #include "Particle.h"

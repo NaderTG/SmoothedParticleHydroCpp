@@ -1,5 +1,5 @@
-#ifndef UTILS
-#define UTILS
+#ifndef SPH3_utils.h
+#define SPH3_utils.h
 
 //convert d to (x,y)
 void hsfc2pos(int n, int d, int *x, int *y) {

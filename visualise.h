@@ -17,6 +17,7 @@
 
 class visualise {
     //At the moment I can only do scatter plot
+public:
     std::string filename;
     
     visualise(std::string& _filename){
@@ -27,17 +28,17 @@ class visualise {
         filename = "test";
     }
     
-    void vis_time_step(Field& _field, double _time);
+    void vis_time_step(Field& _field, int _time);
     
 };
 
-void visualise::vis_time_step(Field& _field, double _time){
+void visualise::vis_time_step(Field& _field, int _time){
     
     
     std::string _filename = filename + std::to_string(_time) + ".dat";
     int _num_parts = _field.num_particles;
     
-    ofstream output_file (_filename);
+    std::ofstream output_file (_filename);
     
     if(output_file.is_open()){
         

@@ -1,11 +1,15 @@
-#ifndef PARAMS
-#define PARAMS
+#ifndef SPH3_params.h
+#define SPH3_params.h
 
 #include <cmath>
 #include <iostream>
 #include <map>
 #include <vector>
 #include <string>
+#include <cstring>
+#include <cstdlib>
+#include <fstream> // ifstream
+#include <sstream> // stringstream
 
 
 namespace params_config {
@@ -76,7 +80,7 @@ namespace params_config {
 }
 
 class Params{
-    
+public:
     double init_mass;
     double init_density;
     
@@ -86,6 +90,10 @@ class Params{
     double width, height, dx, dy; //dx is the cell width and dy is the cell height
     double search_radius;
     double kernel_radius;
+    double star_mass;
+    double damping;
+    double pressure;
+    double star_rad;
     double t_end, dt;
     int numTimeSteps;
     std::string image_name;
@@ -100,8 +108,11 @@ Params::Params(std::string _filename){
     
     
     params_config::data myconfig;
+    params_config::data::const_iterator iter;
     filename = _filename;
-    std::ifstream f(filename + ".ini");
+    std::string filename_1 = filename + ".ini";
+    std::ifstream f(filename_1.c_str());
+//f.open(filename_1.c_str());
     
     image_name = filename + ".pgm";
     f >> myconfig;
@@ -119,6 +130,7 @@ Params::Params(std::string _filename){
             init_density  = std::stod (iter->second);
         }
     }
+    
     
     //Dt
     for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
@@ -143,7 +155,7 @@ Params::Params(std::string _filename){
     
     //Verticle cells
     for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
-        if("verticle cells" == iter->first){
+        if("vertical cells" == iter->first){
             num_cells_ver = std::stoi (iter->second);
         }
     }
@@ -176,7 +188,30 @@ Params::Params(std::string _filename){
         }
     }
     
-    numTimeSteps = (int) floor(time / dt );
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("pressure" == iter->first){
+            pressure  = std::stod (iter->second);
+        }
+    }
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("damping" == iter->first){
+            damping  = std::stod (iter->second);
+        }
+    }
+    
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("radius" == iter->first){
+            star_rad = std::stod (iter->second);
+        }
+    }
+    
+    for (iter = myconfig.begin(); iter != myconfig.end(); iter++){
+        if("star mass" == iter->first){
+            star_mass = std::stod (iter->second);
+        }
+    }
+    
+    numTimeSteps = (int) floor(t_end / dt );
     num_cells = num_cells_hor * num_cells_ver;
     dx = width / (double) num_cells_hor;
     dy = height / (double) num_cells_ver;

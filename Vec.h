@@ -6,44 +6,37 @@
 //  Copyright (c) 2016 Nader. All rights reserved.
 //
 
-#ifndef SPH_Vec_h
-#define SPH_Vec_h
+#ifndef SPH3_Vec_h
+#define SPH3_Vec_h
 
 
-
-#include<cmath>
+#include <cmath>
 #include<string>
 #include<iostream>
 
-template<int N>
-class Vec{
-    
-private:
+template< int N> class Vec{
     double _elems[N];
-    int _transpose;
-    
 public:
     Vec();
-    Vec(double a);          //Initialize the vector with value 'a'
-    Vec(double, double);
-    Vec(double, double, double);
-    Vec( const Vec&V);
-    ~Vec(){};
-    int length();
-    double* elem_return();
+    Vec(const double& );
+    Vec(const double& a,const double& b){
+        _elems[0] = a; _elems[1] = b;
+    }  // constructor for 2-d Vecs
+    Vec(const double& a,const double& b,const double& c){
+        _elems[0] = a; _elems[1] = b; _elems[2] = c;
+    }  // constructor for 3-d Vecs
+    Vec(const Vec&);
+    const Vec& operator=(const Vec&);
+    const Vec& operator=(const double& );
+    ~Vec(){}  //  destructor
+    double&  operator[](int i) { return _elems[i]; }  //ith component
+    const double&  operator()(int i) const{ return _elems[i]; }  //ith component
+    void set(int i,const double&  a){ _elems[i] = a; }  //  change ith component
+    const Vec& operator+=(const Vec&);
+    const Vec& operator-=(const Vec&);
+    const Vec& operator*=(const double& );
+    const Vec& operator/=(const double& );
     
-    //    Vec& operator=( Vec&);
-    Vec& operator=( Vec);
-    Vec& operator=( double&);
-    void transpose(){_transpose *=-1;}
-    int return_trans(){return _transpose;}
-    double& operator[](int i) {return _elems[i];}
-    double& operator()(int i) {return _elems[i];}
-    void set(int i, double a) {_elems[i] = a;}
-    Vec& operator+=(Vec&);
-    Vec& operator-=(Vec&);
-    Vec& operator*=(double& a);
-    Vec& operator/=(double& a);
     double l2norm(){
         double sum = 0.0;
         for(int i =0 ; i < N; i++){
@@ -58,6 +51,7 @@ public:
         }
         return sum;
     }
+    
     friend std::ostream& operator<<(std::ostream& output, Vec& A){
         output << "\n[\n";
         for(int i = 0; i < N; i++){
@@ -67,168 +61,124 @@ public:
         return output;
     }
     
-    
 };
 
 template<int N>
-Vec<N>::Vec( ){
-    _transpose = -1;
-    for(int i = 0; i < N; i++){
-        _elems[i]  = 0.0;
-    }
-}
+Vec<N>::Vec(){
+    for(int i = 0; i < N; i++)
+        _elems[i] = 0.0;
+}  //  constructor
+
 
 template<int N>
-Vec<N>::Vec(double a){
-    _transpose = -1;
-    for(int i = 0; i < N; i++){
-        _elems[i]  = a;
-    }
-}
-
-template<int N>
-Vec<N>::Vec(double a, double b){
-    _transpose = -1;
-    
-    _elems[0]  = a;
-    _elems[1]  = b;
-}
-
-template<int N>
-Vec<N>::Vec(double a, double b, double c){
-    _transpose = -1;
-    
-    _elems[0]  = a;
-    _elems[1]  = b;
-    _elems[2] = c;
-}
-
-template<int N>
-Vec<N>::Vec(const Vec<N> &V){
-    _transpose = -1;
-    for(int i = 0; i < N; i++){
-        _elems[i]  = V._elems[i];
-    }
-}
-
-
-
-//template<int N>
-//Vec<N>& Vec<N>::operator =( Vec<N>& V){
-//    if( this != &V)
-//        for(int i = 0; i < N; i++){
-//            _elems[i] = V._elems[i];
-//        }
-//    return *this;
-//}
-
-template<int N>
-Vec<N>& Vec<N>::operator =( Vec<N> V){
-    if( this != &V)
-        for(int i = 0; i < N; i++){
-            _elems[i] = V._elems[i];
-        }
-    return *this;
-}
-
-template<int N>
-Vec<N>& Vec<N>::operator =( double& a){
-    for(int i = 0; i < N; i++){
+Vec<N>::Vec(const double&  a ){
+    for(int i = 0; i < N; i++)
         _elems[i] = a;
-    }
-    return *this;
-}
+}  //  constructor
 
 template<int N>
-Vec<N>& Vec<N>::operator +=( Vec<N>& V){
-    
-    for(int i = 0; i < N; i++){
-        _elems[i] += V[i];
-    }
-    return *this;
-}
+Vec<N>::Vec(const Vec<N>& v){
+    for(int i = 0; i < N; i++)
+        _elems[i] = v._elems[i];
+}  //  copy constructor
 
 template<int N>
-Vec<N>& Vec<N>::operator -=( Vec<N>& V){
-    
-    for(int i = 0; i < N; i++){
-        _elems[i] -= V[i];
-    }
+const Vec<N>& Vec<N>::operator=(const Vec<N>& v){
+    if(this != &v)
+        for(int i = 0; i < N; i++)
+            _elems[i] = v._elems[i];
     return *this;
-}
+}  //  assignment operator
 
 template<int N>
-Vec<N>& Vec<N>::operator *=( double& a){
-    
-    for(int i = 0; i < N; i++){
+const Vec<N>& Vec<N>::operator=(const double&  a){
+    for(int i = 0; i < N; i++)
+        _elems[i] = a;
+    return *this;
+}  //  assignment operator with a scalar argument
+
+template<int N>
+const Vec<N>& Vec<N>::operator+=(const Vec<N>&v){
+    for(int i = 0; i < N; i++)
+        _elems[i] += v(i);
+    return *this;
+}  //  adding a Vec to the current Vec
+
+template<int N>
+const Vec<N>& Vec<N>::operator-=(const Vec<N>&v){
+    for(int i = 0; i < N; i++)
+        _elems[i] -= v(i);
+    return *this;
+}  //  subtracting a Vec from the current Vec
+
+template<int N>
+const Vec<N>& Vec<N>::operator*=(const double&  a){
+    for(int i = 0; i < N; i++)
         _elems[i] *= a;
-    }
     return *this;
-}
+}  //  multiplying the current Vec by a scalar
 
 template<int N>
-Vec<N>& Vec<N>::operator /=( double& a){
-    double b;
-    if(a == 0){
-        b = 1.0;
-    }else{
-        b = a;
-    }
-    for(int i = 0; i < N; i++){
-        _elems[i] /= b;
-    }
+const Vec<N>& Vec<N>::operator/=(const double&  a){
+    for(int i = 0; i < N; i++)
+        _elems[i] /= a;
     return *this;
-}
+}  //  multiplying the current Vec by a scalar
 
 template<int N>
-Vec<N> operator+( Vec<N>&u, Vec<N>&v){
-    return Vec<N>(u) +=v;
-}
+const Vec<N> operator+(const Vec<N>&u, const Vec<N>&v){
+    return Vec<N>(u) += v;
+}  //  Vec plus Vec
 
 template<int N>
-Vec<N> operator-( Vec<N>&u, Vec<N>&v){
-    return Vec<N>(u) -=v;
-}
+const Vec<N> operator-(const Vec<N>&u, const Vec<N>&v){
+    return Vec<N>(u) -= v;
+}  //  Vec minus Vec
 
 template<int N>
-Vec<N> operator*( Vec<N>&u, double&a){
-    return Vec<N>(u) *=a;
-}
+const Vec<N> operator*(const Vec<N>&u, const double&  a){
+    return Vec<N>(u) *= a;
+}  //  Vec times scalar
 
 template<int N>
-Vec<N> operator*(double&a ,Vec<N>&u){
-    return Vec<N>(u) *=a;
-}
+const Vec<N> operator*(const double&  a, const Vec<N>&u){
+    return Vec<N>(u) *= a;
+}  //  'T' times Vec
 
 template<int N>
-Vec<N> operator/(double&a ,Vec<N>&u){
-    return Vec<N>(u) /=a;
-}
+const Vec<N> operator/(const Vec<N>&u, const double&  a){
+    return Vec<N>(u) /= a;
+}  //  Vec times scalar
 
 template<int N>
-Vec<N> operator/( Vec<N>&u, double&a){
-    return Vec<N>(u) /=a;
-}
-
-template<int N>
-Vec<N> operator+(Vec<N>&u){
+const Vec<N>& operator+(const Vec<N>&u){
     return u;
-}
-template<int N>
-Vec<N> operator-(Vec<N>&u){
-    return Vec<N>(u) *=-1;
-}
+}  //  negative of a Vec
 
 template<int N>
-double operator*(Vec<N>&u, Vec<N>&v){
-    double sum = 0.0;
-    if(u.return_trans() == 1 && v.return_trans() == -1){
-        for(int i = 0; i < N; i++){
-            sum += u[i]*v[i];
-        }
-    }
+const Vec<N> operator-(const Vec<N>&u){
+    return Vec<N>(u) *= -1;
+}  //  negative of a Vec
+
+template<int N>
+const double operator*(const Vec<N>&u, const Vec<N>&v){
+    double sum = 0;
+    for(int i = 0; i < N; i++)
+        sum += u(i) * +v(i);
     return sum;
-}
+}  //  Vec times Vec (inner product)
+
+
+template<int N>
+void print(const Vec<N>&v){
+    printf("(");
+    for(int i = 0;i < N; i++){
+        printf("v[%d]=",i);
+        print(v[i]);
+    }
+    printf(")\n");
+}  //  printing a Vec
+
 
 
 #endif

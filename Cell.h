@@ -6,8 +6,8 @@
 //  Copyright (c) 2016 Nader. All rights reserved.
 //
 
-#ifndef SPH_Cell_h
-#define SPH_Cell_h
+#ifndef SPH3_Cell_h
+#define SPH3_Cell_h
 
 #include "Vec.h"
 #include "Particle.h"
@@ -40,6 +40,7 @@ public:
     int getNumParts();
     void setCell_type(int _type);
     void eraseFromList(int _idx);
+    void reset_cell();
     int getNumNeighbours();
     bool inCell(Particle*);
     
@@ -95,5 +96,11 @@ bool Cell::inCell(Particle* _part){
     }
     
     return _result;
+}
+
+void Cell::reset_cell(){
+    
+    neighbour_index.clear();
+    parts_idx.clear();
 }
 #endif

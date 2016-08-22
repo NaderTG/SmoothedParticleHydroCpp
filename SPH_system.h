@@ -6,8 +6,8 @@
 //  Copyright (c) 2016 Nader. All rights reserved.
 //
 
-#ifndef SPH_SPH_system_h
-#define SPH_SPH_system_h
+#ifndef SPH3_system_h
+#define SPH3_system_h
 
 #include <vector>
 #include "Vec.h"
